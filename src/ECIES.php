@@ -156,4 +156,20 @@ class ECIES {
         
         return Crypto::aes256CbcPkcs7Decrypt(Utils::substring($c, 16, strlen($c)), $this->getkE(), Utils::substring($c, 0, 16));
     }
+    public function makeIV() {
+        $efforts = 0;
+        $maxEfforts = 50;
+        $wasItSecure = false;
+
+        do {
+            $efforts+=1;
+            $iv = openssl_random_pseudo_bytes(16, $wasItSecure);
+            if ($efforts == $maxEfforts) {
+                    throw new Exception('Unable to genereate secure iv.');
+                    break;
+            }
+        } while (!$wasItSecure);
+
+        return $iv;
+    }
 }
